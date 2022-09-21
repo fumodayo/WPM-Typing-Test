@@ -1,5 +1,6 @@
 import curses
 from curses import wrapper
+import time 
 
 def start_screen(stdscr):
     stdscr.clear()
@@ -19,18 +20,26 @@ def display_text(stdscr, target, current, wpm=0):
             color = curses.color_pair(2)
             
         stdscr.addstr(0, i, char, color)
-    
+
 def wpm_test(stdscr):
     target_text = "Hello world this is some test text for this app!"
     current_text = []
     wpm = 0
+    start_time = time.time()
+    stdscr.nodelay(True)
     
-    while True: 
+    while True:     
+        time_elapsed = max(time.time() - start_time, 1)
+        wpm = round((len(current_text) / (time_elapsed / 60)) / 5)
+        
         stdscr.clear()
         display_text(stdscr, target_text, current_text, wpm)
         stdscr.refresh()
         
-        key = stdscr.getkey()
+        try:
+            key = stdscr.getkey()   
+        except:
+            continue
         
         if ord(key) == 27:
             break
